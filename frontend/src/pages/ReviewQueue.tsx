@@ -73,7 +73,7 @@ function formatDate(dateStr: string) {
 
 export default function ReviewQueue() {
   const navigate = useNavigate();
-  const [submissions, setSubmissions] = useState(unreviewedSubmissions);
+  const [submissions] = useState(unreviewedSubmissions);
   const [reviewedIds, setReviewedIds] = useState<Set<string>>(new Set());
 
   const handleMarkReviewed = (id: string, bandPresent: boolean) => {
