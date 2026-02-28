@@ -1,0 +1,14 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" fill="#4ade80" rx="6"/>
+  <g transform="translate(6, 8)">
+    <!-- Z shape -->
+    <line x1="4" y1="4" x2="16" y2="4" stroke="white" stroke-width="2"/>
+    <line x1="16" y1="4" x2="4" y2="12" stroke="white" stroke-width="2"/>
+    <line x1="4" y1="12" x2="16" y2="12" stroke="white" stroke-width="2"/>
+    <!-- Corner brackets -->
+    <rect x="1" y="1" width="5" height="5" fill="none" stroke="white" stroke-width="1.5"/>
+    <rect x="14" y="1" width="5" height="5" fill="none" stroke="white" stroke-width="1.5"/>
+    <rect x="1" y="10" width="5" height="5" fill="none" stroke="white" stroke-width="1.5"/>
+    <rect x="14" y="10" width="5" height="5" fill="none" stroke="white" stroke-width="1.5"/>
+  </g>
+</svg>
