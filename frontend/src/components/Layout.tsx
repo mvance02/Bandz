@@ -28,7 +28,7 @@ export default function Layout() {
       <div className="w-[40px] bg-black flex-shrink-0" />
       <div className="flex-1 flex flex-col min-w-0">
         <Header title={title} />
-        <main className="flex-1 p-10 overflow-auto bg-bg-primary">
+        <main className="flex-1 pt-10 px-10 pb-10 overflow-auto bg-bg-primary">
           <Outlet />
         </main>
       </div>

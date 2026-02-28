@@ -27,9 +27,9 @@ export default function Header({ title }: HeaderProps) {
   };
 
   return (
-    <header className="h-[5.5rem] bg-bg-primary flex items-center justify-between px-10 border-b border-border">
+    <header className="h-[5.5rem] bg-bg-primary flex items-center justify-between px-10 rounded-l-xl" style={{ marginBottom: '2rem' }}>
       {/* Title */}
-      <div className="flex-1">
+      <div className="flex-1" style={{ paddingLeft: '3rem' }}>
         <h1 className="font-display text-[2rem] font-semibold text-text-primary tracking-tight">{title}</h1>
       </div>
 

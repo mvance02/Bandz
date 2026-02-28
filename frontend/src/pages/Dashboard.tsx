@@ -95,7 +95,8 @@ export default function Dashboard() {
           </div>
 
           <button
-            className="btn-primary w-full mt-6"
+            className="btn-primary w-full"
+            style={{ marginTop: '2.5rem' }}
             onClick={() => toast('Text reminders sent to 7 patients', 'success')}
           >
             Send Text Reminder?
