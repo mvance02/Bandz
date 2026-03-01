@@ -169,6 +169,194 @@ router.patch('/:id/status', async (req, res) => {
   }
 });
 
+// Get patient stats for mobile app
+router.get('/:id/stats', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get patient info with practice
+    const patientResult = await pool.query(
+      `SELECT p.*, pr.id as practice_id, pr.name as practice_name
+       FROM patients p
+       JOIN practices pr ON p.practice_id = pr.id
+       WHERE p.id = $1`,
+      [id]
+    );
+    
+    if (patientResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+    
+    const patient = patientResult.rows[0];
+    
+    // Calculate on-time percentage (all time)
+    const onTimeResult = await pool.query(
+      `SELECT 
+         COUNT(*) as total_snaps,
+         COUNT(*) FILTER (WHERE ps.is_on_time = true) as on_time_snaps
+       FROM photo_submissions ps
+       JOIN daily_prompts dp ON ps.daily_prompt_id = dp.id
+       WHERE dp.patient_id = $1`,
+      [id]
+    );
+    
+    // Calculate total days enrolled
+    const daysEnrolled = await pool.query(
+      `SELECT EXTRACT(DAY FROM NOW() - created_at)::int as days
+       FROM patients WHERE id = $1`,
+      [id]
+    );
+    
+    // Calculate ranking within practice (by on-time percentage)
+    const rankingResult = await pool.query(
+      `WITH patient_stats AS (
+         SELECT 
+           dp.patient_id,
+           COUNT(ps.id) as total,
+           COUNT(*) FILTER (WHERE ps.is_on_time = true) as on_time,
+           CASE WHEN COUNT(ps.id) > 0 
+             THEN (COUNT(*) FILTER (WHERE ps.is_on_time = true)::float / COUNT(ps.id) * 100)
+             ELSE 0 
+           END as pct
+         FROM daily_prompts dp
+         LEFT JOIN photo_submissions ps ON dp.id = ps.daily_prompt_id
+         JOIN patients p ON dp.patient_id = p.id
+         WHERE p.practice_id = $1
+         GROUP BY dp.patient_id
+       ),
+       ranked AS (
+         SELECT 
+           patient_id,
+           pct,
+           PERCENT_RANK() OVER (ORDER BY pct DESC) * 100 as ranking
+         FROM patient_stats
+       )
+       SELECT COALESCE(ranking, 50)::int as ranking FROM ranked WHERE patient_id = $2`,
+      [patient.practice_id, id]
+    );
+    
+    // Week-over-week change calculation
+    const wowResult = await pool.query(
+      `WITH this_week AS (
+         SELECT COUNT(*) FILTER (WHERE ps.is_on_time = true)::float / NULLIF(COUNT(*), 0) * 100 as pct
+         FROM photo_submissions ps
+         JOIN daily_prompts dp ON ps.daily_prompt_id = dp.id
+         WHERE dp.patient_id = $1 AND dp.date >= NOW() - INTERVAL '7 days'
+       ),
+       last_week AS (
+         SELECT COUNT(*) FILTER (WHERE ps.is_on_time = true)::float / NULLIF(COUNT(*), 0) * 100 as pct
+         FROM photo_submissions ps
+         JOIN daily_prompts dp ON ps.daily_prompt_id = dp.id
+         WHERE dp.patient_id = $1 
+           AND dp.date >= NOW() - INTERVAL '14 days' 
+           AND dp.date < NOW() - INTERVAL '7 days'
+       )
+       SELECT 
+         COALESCE(this_week.pct, 0) - COALESCE(last_week.pct, 0) as change
+       FROM this_week, last_week`,
+      [id]
+    );
+    
+    const stats = onTimeResult.rows[0];
+    const totalSnaps = parseInt(stats.total_snaps) || 0;
+    const onTimeSnaps = parseInt(stats.on_time_snaps) || 0;
+    const onTimePct = totalSnaps > 0 ? Math.round((onTimeSnaps / totalSnaps) * 100) : 0;
+    const days = parseInt(daysEnrolled.rows[0]?.days) || 1;
+    const ranking = parseInt(rankingResult.rows[0]?.ranking) || 50;
+    const wowChange = Math.round(parseFloat(wowResult.rows[0]?.change) || 0);
+    
+    res.json({
+      patient: {
+        id: patient.id,
+        name: patient.name,
+        practice: patient.practice_name,
+      },
+      stats: {
+        onTimeSnaps: onTimePct,
+        onTimeChange: wowChange >= 0 ? `+${wowChange}%` : `${wowChange}%`,
+        totalSnaps,
+        totalDays: days,
+        ranking: 100 - ranking, // Invert so lower is better (top 10% = ranking of 10)
+      },
+    });
+  } catch (error) {
+    console.error('Get patient stats error:', error);
+    res.status(500).json({ error: 'Failed to fetch patient stats' });
+  }
+});
+
+// Get today's prompts for patient (mobile app)
+router.get('/:id/prompts/today', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check if prompts exist for today, if not create them
+    const existingPrompts = await pool.query(
+      'SELECT * FROM daily_prompts WHERE patient_id = $1 AND date = $2 ORDER BY slot',
+      [id, today]
+    );
+    
+    let prompts = existingPrompts.rows;
+    
+    // If no prompts for today, create them with random times
+    if (prompts.length === 0) {
+      const timeWindows = [
+        { slot: 1, startHour: 8, endHour: 10 },   // Morning: 8-10 AM
+        { slot: 2, startHour: 12, endHour: 15 },  // Midday: 12-3 PM
+        { slot: 3, startHour: 19, endHour: 21 },  // Evening: 7-9 PM
+      ];
+      
+      for (const window of timeWindows) {
+        // Generate random time within window
+        const randomHour = window.startHour + Math.random() * (window.endHour - window.startHour);
+        const hour = Math.floor(randomHour);
+        const minute = Math.floor((randomHour - hour) * 60);
+        
+        const notificationTime = new Date(today);
+        notificationTime.setHours(hour, minute, 0, 0);
+        
+        // Deadline is 2 minutes after notification
+        const deadlineTime = new Date(notificationTime.getTime() + 2 * 60 * 1000);
+        
+        await pool.query(
+          `INSERT INTO daily_prompts (patient_id, date, slot, notification_sent_at, submission_deadline_at)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [id, today, window.slot, notificationTime.toISOString(), deadlineTime.toISOString()]
+        );
+      }
+      
+      // Fetch the newly created prompts
+      const newPrompts = await pool.query(
+        'SELECT * FROM daily_prompts WHERE patient_id = $1 AND date = $2 ORDER BY slot',
+        [id, today]
+      );
+      prompts = newPrompts.rows;
+    }
+    
+    // Get submissions for these prompts
+    const promptIds = prompts.map(p => p.id);
+    const submissions = await pool.query(
+      `SELECT * FROM photo_submissions WHERE daily_prompt_id = ANY($1)`,
+      [promptIds]
+    );
+    
+    // Combine prompts with their submissions
+    const result = prompts.map(prompt => {
+      const submission = submissions.rows.find(s => s.daily_prompt_id === prompt.id);
+      return {
+        ...prompt,
+        submission: submission || null,
+      };
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Get today prompts error:', error);
+    res.status(500).json({ error: 'Failed to fetch today prompts' });
+  }
+});
+
 // Patient submits photo (for mobile app)
 router.post('/photo', async (req, res) => {
   try {
