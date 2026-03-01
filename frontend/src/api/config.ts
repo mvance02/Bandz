@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = 'http://Bandz-env.eba-mncqqwp8.us-east-2.elasticbeanstalk.com';
+export const API_BASE_URL = 'http://localhost:3001';
 
 // Default headers
 export const defaultHeaders = {

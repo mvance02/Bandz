@@ -75,7 +75,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-10">
+          <div className="grid grid-cols-2 gap-10 items-start">
             <div>
               {barChartData.length > 0 ? (
                 <BarChart data={barChartData} />
@@ -85,7 +85,7 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center">
               <DonutChart
                 activePercent={activityStats?.activePercent || 0}
                 inactivePercent={activityStats?.inactivePercent || 0}
@@ -166,7 +166,7 @@ export default function Dashboard() {
       {/* Right section */}
       <div className="col-span-4 flex flex-col gap-8">
         {/* Practice Card */}
-        <div className="bg-green-primary rounded-2xl p-6 flex items-center gap-6">
+        <div className="bg-green-primary rounded-2xl py-6 pr-6 flex items-center gap-6" style={{ paddingLeft: '1.25rem' }}>
           <div className="flex-shrink-0">
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/20">
               <img src={doctor.avatar} alt={doctor.name} className="w-full h-full object-cover" />
@@ -190,8 +190,8 @@ export default function Dashboard() {
 
           <div className="space-y-5">
             <div className="flex justify-between items-center">
-              <span className="text-text-secondary text-sm">Doctor Number</span>
-              <span className="text-text-primary font-medium">{doctor.number}</span>
+              <span className="text-text-secondary text-sm">Practice Code</span>
+              <span className="text-text-primary font-medium">{doctor.practiceCode}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-text-secondary text-sm">Name</span>
@@ -204,10 +204,6 @@ export default function Dashboard() {
             <div className="flex justify-between items-center">
               <span className="text-text-secondary text-sm">Patients Activated</span>
               <span className="text-text-primary font-medium">{stats?.patientsMonitored || doctor.patientsActivated}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-text-secondary text-sm">Start Date</span>
-              <span className="text-text-primary font-medium">{doctor.startDate}</span>
             </div>
           </div>
         </div>

@@ -31,14 +31,14 @@ export default function DonutChart({
   return (
     <div className="flex flex-col items-center">
       {showLabels && (
-        <div className="flex items-center gap-4 mb-2">
+        <div className="flex items-center gap-6 mb-6">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-green-primary rounded-sm" />
-            <span className="text-xs text-text-secondary">Active</span>
+            <span className="text-sm text-text-secondary">Active</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-teal-accent rounded-sm" />
-            <span className="text-xs text-text-secondary">Inactive</span>
+            <span className="text-sm text-text-secondary">Inactive</span>
           </div>
         </div>
       )}

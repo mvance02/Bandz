@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Camera, Save } from 'lucide-react';
-import { patients, practice, complianceHistory } from '../data/mockData';
+import { patients, practice, complianceHistory, BANDS_TYPES, BANDS_SIZES, type BandsType, type BandsSize } from '../data/mockData';
 import ComplianceChart from '../components/ComplianceChart';
 import { useToast } from '../components/Toast';
 
@@ -12,6 +12,8 @@ export default function PatientProfile() {
 
   const patient = patients.find(p => p.id === patientId);
   const [status, setStatus] = useState(patient?.status || 'active');
+  const [bandsType, setBandsType] = useState<BandsType>(patient?.bandsType || 'Class I');
+  const [bandsSize, setBandsSize] = useState<BandsSize>(patient?.bandsSize || '1/4"');
   const [notes, setNotes] = useState('');
   const [savedNotes, setSavedNotes] = useState('');
 
@@ -27,6 +29,7 @@ export default function PatientProfile() {
   const metrics = {
     last7: { compliancePct: 85, onTimePct: 92 },
     last30: { compliancePct: 78, onTimePct: 88, missingCount: 8 },
+    overall: { compliancePct: patient?.consistency || 0, onTimePct: 86 },
   };
 
   const toggleStatus = () => {
@@ -70,10 +73,10 @@ export default function PatientProfile() {
             <div className="mt-6">
               <button
                 onClick={toggleStatus}
-                className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${
+                className={`font-semibold transition-all text-lg ${
                   status === 'active'
-                    ? 'bg-green-primary text-black'
-                    : 'bg-yellow-500 text-black'
+                    ? 'text-green-primary'
+                    : 'text-yellow-500'
                 }`}
               >
                 {status === 'active' ? 'Active' : 'Paused'}
@@ -99,14 +102,40 @@ export default function PatientProfile() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-text-secondary text-sm">Bands Type</span>
-                <span className="text-text-primary font-medium text-sm">{patient.bandsType}</span>
+                <select
+                  value={bandsType}
+                  onChange={(e) => {
+                    setBandsType(e.target.value as BandsType);
+                    toast(`Bands type updated to ${e.target.value}`, 'success');
+                  }}
+                  className="bg-bg-tertiary border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-green-primary/50 cursor-pointer"
+                >
+                  {BANDS_TYPES.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-text-secondary text-sm">Bands Size</span>
+                <select
+                  value={bandsSize}
+                  onChange={(e) => {
+                    setBandsSize(e.target.value as BandsSize);
+                    toast(`Bands size updated to ${e.target.value}`, 'success');
+                  }}
+                  className="bg-bg-tertiary border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-green-primary/50 cursor-pointer"
+                >
+                  {BANDS_SIZES.map(size => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
               </div>
               {patient.tags.length > 0 && (
                 <div className="flex justify-between items-start">
                   <span className="text-text-secondary text-sm">Tags</span>
                   <div className="flex gap-2 flex-wrap justify-end">
                     {patient.tags.map(tag => (
-                      <span key={tag} className="px-3 py-1 rounded-full text-xs bg-green-primary text-black font-medium">
+                      <span key={tag} className="text-sm text-green-primary font-medium">
                         {tag}
                       </span>
                     ))}
@@ -153,8 +182,8 @@ export default function PatientProfile() {
           {/* Performance Summary */}
           <div className="card">
             <h3 className="font-display text-xl font-semibold mb-6">Performance Summary</h3>
-            <div className="grid grid-cols-3 gap-5">
-              <div className="bg-bg-tertiary rounded-xl p-5 border border-border">
+            <div className="grid grid-cols-4 gap-5">
+              <div className="bg-bg-tertiary rounded-xl p-5 border border-border text-center">
                 <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Last 7 Days</h4>
                 <div className="space-y-4">
                   <div>
@@ -168,7 +197,7 @@ export default function PatientProfile() {
                 </div>
               </div>
 
-              <div className="bg-bg-tertiary rounded-xl p-5 border border-border">
+              <div className="bg-bg-tertiary rounded-xl p-5 border border-border text-center">
                 <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Last 30 Days</h4>
                 <div className="space-y-4">
                   <div>
@@ -182,7 +211,24 @@ export default function PatientProfile() {
                 </div>
               </div>
 
-              <div className="bg-bg-tertiary rounded-xl p-5 border border-border">
+              <div className="bg-bg-tertiary rounded-xl p-5 border border-border text-center">
+                <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Overall</h4>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-text-muted text-xs mb-1">Compliance</p>
+                    <p className={`text-3xl font-bold ${
+                      metrics.overall.compliancePct >= 80 ? 'text-green-primary' :
+                      metrics.overall.compliancePct >= 60 ? 'text-yellow-400' : 'text-red-400'
+                    }`}>{metrics.overall.compliancePct}%</p>
+                  </div>
+                  <div>
+                    <p className="text-text-muted text-xs mb-1">On-time</p>
+                    <p className="text-3xl font-bold text-text-primary">{metrics.overall.onTimePct}%</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-bg-tertiary rounded-xl p-5 border border-border text-center">
                 <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Missing (30d)</h4>
                 <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)]">
                   <p className="text-5xl font-bold text-red-400">{metrics.last30.missingCount}</p>

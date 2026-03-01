@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, SlidersHorizontal, X, ChevronUp, ChevronDown,
+  SlidersHorizontal, X, ChevronUp, ChevronDown,
   UserPlus, Users,
 } from 'lucide-react';
-import { patients as initialPatients } from '../data/mockData';
+import { patients as initialPatients, BANDS_TYPES } from '../data/mockData';
 import type { Patient } from '../data/mockData';
 import { useToast } from '../components/Toast';
 
 type SortField = 'name' | 'treatmentDays' | 'consistency';
 type SortDir = 'asc' | 'desc';
 
-const BANDS_TYPES = ['Triangle', 'Cross I', 'Cross II', 'Cross III', 'Square'] as const;
 const ALL_TAGS = ['Sports', 'Night Owl', 'Early Riser'];
 
 export default function Patients() {
@@ -112,21 +111,17 @@ export default function Patients() {
   return (
     <div className="flex flex-col gap-6 h-full min-h-[calc(100vh-8rem)]">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4" style={{ paddingTop: '0.5rem', paddingLeft: '1rem', paddingRight: '1rem' }}>
         <div className="flex items-center gap-3">
           {/* Search */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search patients..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="bg-bg-secondary border border-border rounded-xl pl-5 pr-12 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-green-primary/50 w-64 transition-all"
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-bg-tertiary flex items-center justify-center">
-              <Search size={14} className="text-text-muted" />
-            </div>
-          </div>
+          <input
+            type="text"
+            placeholder="Search patients..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="h-11 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-green-primary/50 w-64 transition-all"
+            style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+          />
 
           {/* Filter */}
           <div className="relative">
@@ -313,7 +308,7 @@ export default function Patients() {
 
                   {/* Bands Type */}
                   <td className="py-5 px-6">
-                    <span className="px-4 py-1.5 rounded-full text-sm bg-bg-tertiary text-text-secondary border border-border">
+                    <span className="text-sm text-text-secondary">
                       {patient.bandsType}
                     </span>
                   </td>
@@ -323,7 +318,7 @@ export default function Patients() {
                     {patient.tags.length > 0 ? (
                       <div className="flex gap-2 flex-wrap">
                         {patient.tags.map(tag => (
-                          <span key={tag} className="px-3 py-1.5 rounded-full text-xs bg-green-primary text-black font-medium">
+                          <span key={tag} className="text-sm text-green-primary font-medium">
                             {tag}
                           </span>
                         ))}
@@ -341,9 +336,7 @@ export default function Patients() {
                           <img src={patient.captureUrl} alt="Capture" className="w-full h-full object-cover" />
                         </div>
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-red-500/15 flex items-center justify-center border border-red-500/20">
-                          <X className="text-red-400" size={16} />
-                        </div>
+                        <X size={18} style={{ color: '#b91c1c' }} />
                       )}
                     </div>
                   </td>

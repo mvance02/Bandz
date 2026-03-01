@@ -1,11 +1,18 @@
 // Mock data for BANDZ demo
 
+export type BandsType = 'Class I' | 'Class II' | 'Class III' | 'Vertical' | 'Cross' | 'Box' | 'Triangle' | 'Midline';
+export type BandsSize = '1/8"' | '3/16"' | '1/4"' | '5/16"' | '3/8"';
+
+export const BANDS_TYPES: BandsType[] = ['Class I', 'Class II', 'Class III', 'Vertical', 'Cross', 'Box', 'Triangle', 'Midline'];
+export const BANDS_SIZES: BandsSize[] = ['1/8"', '3/16"', '1/4"', '5/16"', '3/8"'];
+
 export interface Patient {
   id: string;
   name: string;
   avatar: string;
   treatmentDays: number;
-  bandsType: 'Triangle' | 'Cross I' | 'Cross II' | 'Cross III' | 'Square';
+  bandsType: BandsType;
+  bandsSize: BandsSize;
   tags: string[];
   captureUrl: string | null;
   consistency: number;
@@ -31,16 +38,15 @@ export interface ScheduleSlot {
 export const practice = {
   id: 'p1',
   name: 'Bennion Orthodontics',
-  code: 'BENNION',
+  code: 'BennionOrtho',
 };
 
 export const doctor = {
   id: 'd1',
   name: 'Dr. Edwin Bennion',
-  number: '98456',
+  practiceCode: 'BennionOrtho',
   status: 'Active',
   patientsActivated: 176,
-  startDate: 'March 24th, 2024',
   avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop&crop=face',
 };
 
@@ -51,6 +57,7 @@ export const patients: Patient[] = [
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 246,
     bandsType: 'Triangle',
+    bandsSize: '1/4"',
     tags: ['Sports'],
     captureUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=100&h=100&fit=crop',
     consistency: 93,
@@ -63,7 +70,8 @@ export const patients: Patient[] = [
     name: 'Emilu Cho',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 450,
-    bandsType: 'Cross I',
+    bandsType: 'Cross',
+    bandsSize: '3/16"',
     tags: [],
     captureUrl: null,
     consistency: 55,
@@ -76,7 +84,8 @@ export const patients: Patient[] = [
     name: 'Kenzie Schwartz',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 98,
-    bandsType: 'Cross II',
+    bandsType: 'Class II',
+    bandsSize: '1/4"',
     tags: ['Night Owl'],
     captureUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=100&h=100&fit=crop',
     consistency: 78,
@@ -89,7 +98,8 @@ export const patients: Patient[] = [
     name: 'Claudia Merrill',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 702,
-    bandsType: 'Square',
+    bandsType: 'Box',
+    bandsSize: '3/8"',
     tags: ['Night Owl'],
     captureUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=100&h=100&fit=crop',
     consistency: 100,
@@ -103,6 +113,7 @@ export const patients: Patient[] = [
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 345,
     bandsType: 'Triangle',
+    bandsSize: '1/4"',
     tags: ['Sports'],
     captureUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=100&h=100&fit=crop',
     consistency: 93,
@@ -115,7 +126,8 @@ export const patients: Patient[] = [
     name: 'Calvin Davis',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 267,
-    bandsType: 'Cross III',
+    bandsType: 'Class III',
+    bandsSize: '5/16"',
     tags: [],
     captureUrl: null,
     consistency: 45,
@@ -128,7 +140,8 @@ export const patients: Patient[] = [
     name: 'Angela Brace',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 123,
-    bandsType: 'Cross I',
+    bandsType: 'Class I',
+    bandsSize: '1/8"',
     tags: ['Early Riser'],
     captureUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=100&h=100&fit=crop',
     consistency: 88,
@@ -141,7 +154,8 @@ export const patients: Patient[] = [
     name: 'Terrance Gray',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 543,
-    bandsType: 'Cross I',
+    bandsType: 'Vertical',
+    bandsSize: '3/16"',
     tags: [],
     captureUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=100&h=100&fit=crop',
     consistency: 81,
@@ -154,7 +168,8 @@ export const patients: Patient[] = [
     name: 'Rachel Grundvig',
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 122,
-    bandsType: 'Triangle',
+    bandsType: 'Midline',
+    bandsSize: '1/4"',
     tags: [],
     captureUrl: null,
     consistency: 31,
@@ -167,7 +182,8 @@ export const patients: Patient[] = [
     name: 'Marcus Johnson',
     avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=face',
     treatmentDays: 89,
-    bandsType: 'Square',
+    bandsType: 'Box',
+    bandsSize: '5/16"',
     tags: ['Sports'],
     captureUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=100&h=100&fit=crop',
     consistency: 95,

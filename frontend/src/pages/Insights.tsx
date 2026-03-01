@@ -18,19 +18,19 @@ export default function Insights() {
   };
 
   return (
-    <div className="grid grid-cols-12 gap-8 h-full min-h-[calc(100vh-8rem)]">
+    <div className="grid grid-cols-12 gap-6 h-full min-h-[calc(100vh-8rem)]">
       {/* Left section */}
-      <div className="col-span-9 flex flex-col gap-8">
+      <div className="col-span-9 flex flex-col gap-4">
         {/* Tab Navigation */}
-        <div className="flex gap-3">
+        <div className="flex gap-6" style={{ paddingTop: '1rem', paddingLeft: '1rem' }}>
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-7 py-3.5 rounded-xl font-medium transition-all text-[0.9375rem] whitespace-nowrap ${
+              className={`font-medium transition-all whitespace-nowrap ${
                 activeTab === tab
-                  ? 'bg-green-primary text-black'
-                  : 'bg-bg-secondary border border-border text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
+                  ? 'text-green-primary text-lg font-semibold'
+                  : 'text-text-secondary text-[0.9375rem] hover:text-text-primary'
               }`}
             >
               {tab}
@@ -123,13 +123,13 @@ export default function Insights() {
       </div>
 
       {/* Right section */}
-      <div className="col-span-3 flex flex-col gap-5">
+      <div className="col-span-3 flex flex-col gap-4" style={{ paddingTop: '3.25rem' }}>
         {/* Donut Chart */}
-        <div className="card flex-shrink-0">
+        <div className="card">
           <DonutChart
             activePercent={activityStats.activePercent}
             inactivePercent={activityStats.inactivePercent}
-            size="lg"
+            size="md"
           />
         </div>
 

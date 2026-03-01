@@ -53,7 +53,7 @@ export default function BarChart({ data, showLegend = true }: BarChartProps) {
   return (
     <div className="w-full">
       {showLegend && (
-        <div className="flex items-center gap-6 mb-6 justify-center">
+        <div className="flex items-center gap-6 mb-6 justify-start" style={{ paddingLeft: '1.5rem' }}>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-[#a7f3d0] rounded-sm" />
             <span className="text-sm text-text-secondary">Morning</span>

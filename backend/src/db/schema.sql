@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS patients (
     password_hash VARCHAR(255) NOT NULL,
     dob DATE,
     status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'paused')),
-    bands_type VARCHAR(50),
+    bands_type VARCHAR(50) CHECK (bands_type IN ('Class I', 'Class II', 'Class III', 'Vertical', 'Cross', 'Box', 'Triangle', 'Midline')),
+    bands_size VARCHAR(10) CHECK (bands_size IN ('1/8"', '3/16"', '1/4"', '5/16"', '3/8"')),
     notes TEXT,
     start_date DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -91,12 +92,12 @@ CREATE INDEX IF NOT EXISTS idx_schedule_slots_practice_date ON schedule_slots(pr
 
 -- Insert demo data
 INSERT INTO practices (name, practice_code) 
-VALUES ('Bennion Orthodontics', 'BENNION')
+VALUES ('Bennion Orthodontics', 'BennionOrtho')
 ON CONFLICT (practice_code) DO NOTHING;
 
 INSERT INTO orthodontists (practice_id, name, email, phone, password_hash)
 VALUES (
-    (SELECT id FROM practices WHERE practice_code = 'BENNION'),
+    (SELECT id FROM practices WHERE practice_code = 'BennionOrtho'),
     'Dr. Edwin Bennion',
     'dr.bennion@bandz.demo',
     '555-0123',

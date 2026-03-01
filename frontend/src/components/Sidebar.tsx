@@ -32,13 +32,17 @@ export default function Sidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 pl-16 pr-4 py-3.5 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? 'bg-green-primary text-black font-medium'
-                      : 'text-white/85 hover:bg-white/5 hover:text-white'
+                      ? 'text-green-primary font-semibold text-lg'
+                      : 'text-white/85 hover:text-white text-[0.9375rem]'
                   }`
                 }
               >
-                <item.icon size={20} strokeWidth={1.5} />
-                <span className="text-[0.9375rem]">{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    <item.icon size={isActive ? 22 : 20} strokeWidth={1.5} />
+                    <span>{item.label}</span>
+                  </>
+                )}
               </NavLink>
             </li>
           ))}

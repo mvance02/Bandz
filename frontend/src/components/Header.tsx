@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Bell, MessageSquare, AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
+import { Bell, MessageSquare, AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
 import { mockNotifications } from '../data/mockData';
 
 interface HeaderProps {
@@ -123,19 +123,15 @@ export default function Header({ title }: HeaderProps) {
         </div>
 
         {/* Search */}
-        <div className="relative ml-2">
-          <input
-            type="text"
-            placeholder="Search Here"
-            className="bg-bg-secondary border border-border rounded-xl pl-5 pr-12 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-green-primary/50 w-56 transition-all"
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-bg-tertiary flex items-center justify-center">
-            <Search size={14} className="text-text-muted" />
-          </div>
-        </div>
+        <input
+          type="text"
+          placeholder="Search"
+          className="h-11 bg-bg-secondary border border-border rounded-xl text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-green-primary/50 w-48 transition-all ml-2"
+          style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+        />
 
         {/* Avatar */}
-        <div className="w-11 h-11 rounded-xl bg-bg-tertiary overflow-hidden border border-border ml-2">
+        <div className="w-11 h-11 rounded-xl bg-bg-tertiary overflow-hidden border border-border ml-2" style={{ marginRight: '1rem' }}>
           <img
             src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face"
             alt="Dr. Edwin Bennion"
